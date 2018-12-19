@@ -1,0 +1,142 @@
+<div ng-if='update_response.status==false'>
+	{{showAlert(update_response.message)}}
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div style="margin-bottom: 10px">
+            <form role="form" ng-submit='submit()'>
+                <div class="panel input-group input-group-lg">
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{product_line}}
+                        &nbsp;&nbsp;<span class="fa fa-caret-down"></span></button>
+                      <ul class="dropdown-menu">
+                        <li ng-repeat='pl in product_lines' ng-click='changeProductLine(pl)'><a href="#">{{pl}}</a></li>
+                      </ul>
+                    </div>
+
+                    <input type="text" class="form-control" ng-model='image_url' placeholder="Tag by Image URL or image upload" name="image_url" style="margin-left: 5px;border: 2px solid black;font-size:15px;">
+                    <label class="input-group-addon btn-primary" for='file-input'><i class="fa fa-upload"></i></label><input id='file-input' type="file" name="files" onchange="angular.element(this).scope().uploadFile(this.files)" style="display: none;" />
+                </div>
+                <div class="panel text-center" style="margin-top: 2px;"><input type="submit" name="submit" class="btn btn-primary"></div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class='panel text-center' ng-if='image_links.length>0' style="overflow-x:auto; display: flex;margin-top: 10px">
+          <a ng-repeat='img_url in image_links' ><img src='{{img_url}}' alt="..." ng-click='getSelectedImage(img_url)' style="box-shadow:0px 0px 1px;height : auto !important;height: 50%;width: 40%;"></a>
+    </div>
+</div>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="box-header-with-border text-center" style="padding: 8px">
+            <legend>Tagging Results</legend>
+        </div>
+        <div class="panel-body" ng-if='loading_status==true'>
+        	<center><img src="/public/images/spinner.gif" class="img-responsive"></center>
+        </div>
+        <div class="panel-body" ng-repeat="(image_link, image_data) in image_info">
+            <div class="col-md-12">
+                <!-- Result Image -->
+                <div class="col-md-4">
+                    <div class="box">
+                        <!--<div id='crop_image' style="width:{{image_data['colour']['crop_cordinates']['width']}}px;height:{{image_data['colour']['crop_cordinates']['height']}}px; margin-left:{{image_data['colour']['crop_cordinates']['x_axis']}}px;margin-top:{{image_data['colour']['crop_cordinates']['y_axis']}}px;position:absolute;border: 5px solid orange;"></div>-->
+                        <center><img alt="" src="{{image_link}}" style="height : auto !important;height: 50%;width: 100%;"></center>
+                    </div>
+                </div>
+
+                  <!-- Result Detail -->
+                  <div class="col-md-8">
+                      <div class="panel">
+                            <div class="panel-header">
+                                <h3>Attributes
+                                <small><p class="text">Powered by <span>Selekt</span></p></small></h3>
+                                <hr/>
+                            </div>
+                            <!-- Fashion Attributes -->
+                            <div class="panel-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <td>Attribute</td>
+                                            <td>Value</td>
+                                            <td>Confidence</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat='(attribute, att_data) in image_data'>
+                                            <td>{{attribute}}</td>
+                                            <td ng-if='attribute!="colour"'>{{att_data.attribute_value}}</td>
+                                            <td ng-if='attribute!="colour"'>{{att_data.pred_probability}}</td>
+
+                                            <td ng-if='attribute=="colour"'>
+                                            	<div ng-repeat='att_value_data in att_data.attribute_value'>
+                                            		<label class="col-md-6">{{att_value_data.colour}} </label>
+                                            		<label class="col-md-6" style="background-color: {{att_value_data.hexa_code}};width: 20px;height: 20px;"></label>
+                                            	</div>
+                                            </td>
+                                            <td ng-if='attribute=="colour"'></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                      </div>
+                  </div>
+                <!---->
+              </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+	<div class="text-left"><h3>Contact Us</h3></div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="well well-sm">
+            <form ng-submit='contactMessage()'>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">
+                            Name</label>
+                        <input type="text" class="form-control" id="name" ng-model='contact_name' placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">
+                            Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span>
+                            </span>
+                            <input type="email" class="form-control" id="email" ng-model='contact_email' placeholder="Enter email" required="required"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">
+                            Message</label>
+                        <textarea name="message" id="message" ng-model='contact_message' class="form-control" rows="9" cols="25" required="required" placeholder="Message"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary pull-right" id="btnContactUs">
+                        Send Message</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <form>
+        <legend><span class="glyphicon glyphicon-globe"></span>&nbsp;Our office</legend>
+            <address>
+                <strong>Dbydx Technologies PVT LTD.</strong><br>
+                Building No. 14,<br>
+                Moreshwar Krupa,<br>
+                Opp. Paranjape Garden,<br>
+                Datar Colony, Kanjurmarg East,<br>
+                Mumbai - 400042 <abbr title="mail">prodxhr@gmail.com</abbr><br>
+            </address>
+        </form>
+    </div>
+</div>
